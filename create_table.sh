@@ -25,8 +25,16 @@ echo -n "ID:" >>"$table_name"
 
 read -p "Enter the number of fields (excluding ID): " fields_num
 
-for ((i = 2; i <= $fields_num + 1; i++)); do
-    read -p "Enter the name of field $i: " field_name
+for ((i = 2; i <= fields_num + 1; i++)); do
+    while true; do
+        read -p "Enter the name of field $i: " field_name
+        if [ -z "$field_name" ]; then
+            echo "Field name cannot be empty. Please enter a value."
+        else
+            break
+        fi
+    done
+
     echo -n "$field_name" >>"$table_name"
     if [ $i -lt $((fields_num + 1)) ]; then
         echo -n ":" >>"$table_name"
@@ -36,7 +44,7 @@ done
 echo "" >>"$table_name"
 echo -n "int:" >>"$table_name"
 
-for ((i = 2; i <= $fields_num + 1; i++)); do
+for ((i = 2; i <= fields_num + 1; i++)); do
     while true; do
         read -p "Enter the data type of field $i (string or int): " field_type
         if [ "$field_type" == "string" ] || [ "$field_type" == "int" ]; then
@@ -50,6 +58,8 @@ for ((i = 2; i <= $fields_num + 1; i++)); do
         fi
     done
 done
+echo "" >>"$table_name"
+
 echo "------------------------------------------------"
 echo "Table metadata added to => $table_name <= table."
 echo "------------------------------------------------"

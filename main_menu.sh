@@ -34,6 +34,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         echo "------------------------------------------"
         ;;
     3)
+        clear
         echo "--------------- Connect to a database ---------------------"
         ls -F Database | grep / | tr '/' ' '
         echo "------------------------------------------"
