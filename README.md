@@ -8,8 +8,6 @@ A simple database engine implemented in Bash script.
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
 
 ## About
 
