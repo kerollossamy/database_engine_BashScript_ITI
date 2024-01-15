@@ -13,20 +13,30 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         clear
         echo "----------------- Create database ------------------------"
         read -p "Enter database Name: " name
+
         if [[ ! "$name" =~ ^[0-9_] ]]; then
             name=$(echo "$name" | sed 's/[^a-zA-Z0-9 ]//g' | tr " " "_")
             database_path="Database/$name"
-            if [[ -e "$database_path" ]]; then
-                echo "Error: Database already exists."
-                source main_menu.sh
+
+            if [[ ${#name} -gt 2 ]]; then
+                if [[ -e "$database_path" ]]; then
+                    echo "Error: Database already exists."
+                    source main_menu.sh
+                else
+                    mkdir "$database_path"
+                    echo "[$name] database created successfully."
+                fi
             else
-                mkdir "$database_path"
-                echo "[$name] database created successfully."
+                echo "Error: Please enter a valid name (should be more than two character)"
+                source main_menu.sh
             fi
         else
             echo "Error: Please enter a valid name (should start with a letter)"
+            source main_menu.sh
         fi
+
         echo "---------------------------------------------"
+
         ;;
     2)
         echo "------------------- databases List ------------------------"
