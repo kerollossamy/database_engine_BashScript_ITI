@@ -10,8 +10,6 @@ A simple database engine implemented in Bash script.
   - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
 
 ## About
 
