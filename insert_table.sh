@@ -2,44 +2,48 @@
 
 cd Database/$1
 ls . | tr " " "\n"
+echo "---------------------------------------------------------------------"
 
-read -p "Enter data file name: " filename
-if [ -e "$filename" ]; then
-    echo "File $filename exists."
-    metadata=($(awk -F':' 'NR==1{print NF} NR==2{print $0}' "$filename"))
+read -p "Enter the table name: " tablename
+if [ -e "$tablename" ]; then
+    PS3="$tablename >>"
+    clear
+    metadata=($(awk -F':' 'NR==1{print NF} NR==2{print $0}' "$tablename"))
     num_columns="${metadata[0]}"
     num_records="${metadata[1]}"
-    echo $num_columns
-    echo $num_records
+    echo "Columns number: $num_columns"
 
-    line_number=$(awk 'END{print NR}' "$filename")
-    echo -n "$((line_number - 1)):" >>"$filename"
+    line_number=$(awk 'END{print NR}' "$tablename")
+    echo -n "$((line_number - 1)):" >>"$tablename"
 
     for ((i = 2; i <= $num_columns; i++)); do
-        data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$filename")
+        data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$tablename")
 
-        read -p "Enter data for field $i ($data_type): " data
-
-        if [ "$data_type" == "int" ]; then
-            if [[ ! "$data" =~ ^[0-9]+$ ]]; then
-                echo "Invalid data for field $i. Expected integer."
-                exit 1
+        while true; do
+            read -p "Enter data for column $i ($data_type): " data
+            if [ "$data_type" == "int" ]; then
+                if [[ "$data" =~ ^[0-9]+$ ]]; then
+                    break
+                else
+                    echo "Invalid data. Expected an integer."
+                fi
+            elif [ "$data_type" == "string" ]; then
+                if [[ "$data" =~ ^[[:alpha:]]+$ ]]; then
+                    break
+                else
+                    echo "Invalid data. Expected a string."
+                fi
             fi
-        elif [ "$data_type" == "string" ]; then
-            if [[ ! "$data" =~ ^[[:alpha:]]+$ ]]; then
-                echo "Invalid data for field $i. Expected string."
-                exit 1
-            fi
-        fi
+        done
 
-        echo -n "$data" >>"$filename"
+        echo -n "$data" >>"$tablename"
 
         if [ "$i" -lt "$num_columns" ]; then
-            echo -n ":" >>"$filename"
+            echo -n ":" >>"$tablename"
         fi
     done
 
-    echo "" >>"$filename"
+    echo "" >>"$tablename"
 
     echo "Data added successfully!"
     cd ../../

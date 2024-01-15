@@ -25,6 +25,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
                 else
                     mkdir "$database_path"
                     echo "[$name] database created successfully."
+                    source main_menu.sh
                 fi
             else
                 echo "Error: Please enter a valid name (should be more than two character)"
@@ -50,7 +51,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         echo "------------------------------------------"
         read -p "Enter database Name (or 'back' to return): " name
         if [[ $name == "back" ]]; then
-            continue
+            source main_menu.sh
         fi
         if [[ -d Database/$name ]]; then
             echo "Connected to $name"
