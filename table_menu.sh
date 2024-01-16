@@ -1,49 +1,51 @@
 #!/bin/bash
 
 PS3="$1 >>"
-echo "------------------------------ Table Menu --------------------------------"
+echo -e "\e[94m------------------------------ Table Menu ------------------------------\e[0m"
 select var in "Create Table" "list Table" "Drop Table" "Insert into Table" "Select from Table" "Delete from Table" "Update in Table" "Back to main menu" "Exit"; do
     case $REPLY in
     1)
         clear
-        echo "--------------------- Create a Table -----------------------"
+        echo -e "\e[94m---------------------- Create a Table -------------------------\e[0m"
         source create_table.sh $1
         ;;
     2)
         clear
-        echo "--------------------- Tables list --------------------------"
+        echo -e "\e[94m------------------------ Tables list ---------------------------\e[0m"
         ls Database/$1 | tr " " "\n"
         source table_menu.sh
         ;;
     3)
-        echo "--------------------- Drop Table -------------------------"
+        echo -e "\e[94m------------------------- Drop Table ---------------------------\e[0m"
         ls Database/$1 | tr " " "\n"
         read -p "Enter table name to drop: " table
         if [ -f Database/$1/$table ]; then
             rm "Database/$1/$table"
-            echo "Table ['$table'] deleted successfully."
+            echo -e "\e[92mTable ['$table'] deleted successfully.\e[0m"
             source table_menu.sh
         else
-            echo "Table ['$table'] doesn't exist"
+            echo -e "\e[91mTable ['$table'] doesn't exist\e[0m"
             source table_menu.sh
         fi
         ;;
     4)
-        echo "--------------------- Insert into Table -------------------------"
-        source insert_table.sh
+        echo -e "\e[94m--------------------- Insert into Table -----------------------\e[0m"
+        source insert_data.sh
         ;;
     5)
         clear
-        echo "------------------ Choose table to select from ------------------"
-        source select_table.sh
+        echo -e "\e[94m------------------ Choose table to select from ----------------\e[0m"
+        source select_data.sh
         ;;
     6)
-        echo "---------------------- Delete from Table -------------------------"
-        exit 1
+        clear
+        echo -e "\e[94m---------------------- Delete from Table -----------------------\e[0m"
+        source delete_data.sh
         ;;
     7)
-        echo "---------------------- Update in Table ---------------------------"
-        exit 1
+        clear
+        echo -e "\e[94m---------------------- Update in Table -------------------------\e[0m"
+        source update_data.sh
         ;;
     8)
         source main_menu.sh

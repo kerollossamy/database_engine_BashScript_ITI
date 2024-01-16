@@ -2,7 +2,7 @@
 
 cd Database/$1
 ls . | tr " " "\n"
-echo "---------------------------------------------------------------------"
+echo -e "\e[94m--------------------------------------------------------------------\e[0m"
 
 read -p "Enter the table name: " tablename
 if [ -e "$tablename" ]; then
@@ -12,15 +12,17 @@ if [ -e "$tablename" ]; then
         case $REPLY in
         1)
             clear
-            awk 'NR!=2' "$tablename"
+            awk 'NR!=2' "$tablename" | tr ":" " " | column -t
             cd ../../
             source table_menu.sh
             ;;
         2)
             read -p "Enter the ID to search: " search_id
             clear
-            grep "^ID" "$tablename"
-            grep "^$search_id" "$tablename"
+            (
+                grep "^ID" "$tablename"
+                grep "^$search_id" "$tablename"
+            ) | tr ":" " " | column -t
             cd ../../
             source table_menu.sh
             ;;
@@ -35,12 +37,12 @@ if [ -e "$tablename" ]; then
             source table_menu.sh
             ;;
         *)
-            echo "Invalid option. Please try again."
+            echo -e "\e[91mInvalid option. Please try again.\e[0m"
             ;;
         esac
     done
 else
-    echo "Table doesn't exist."
+    echo -e "\e[91Table doesn't exist.\e[0m"
     cd ../../
     source table_menu.sh
 fi

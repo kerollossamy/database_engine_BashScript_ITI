@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Welcome to Kerollos Samy Database engine simulator"
+echo -e "\e[95mWelcome to Kerollos Samy Database engine simulator\e[0m"
 PS3="Select an option: "
 
 if [[ ! -d "Database" ]]; then
@@ -11,7 +11,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
     case $REPLY in
     1)
         clear
-        echo "----------------- Create database ------------------------"
+        echo -e "\e[94m---------------------- Create database --------------------------\e[0m"
         read -p "Enter database Name: " name
 
         if [[ ! "$name" =~ ^[0-9_] ]]; then
@@ -20,67 +20,87 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
 
             if [[ ${#name} -gt 2 ]]; then
                 if [[ -e "$database_path" ]]; then
-                    echo "Error: Database already exists."
+                    echo -e "\e[91mError: Database already exists.\e[0m"
                     source main_menu.sh
                 else
                     mkdir "$database_path"
-                    echo "[$name] database created successfully."
+                    echo -e "\e[92m[$name] database created successfully.\e[0m"
                     source main_menu.sh
                 fi
             else
-                echo "Error: Please enter a valid name (should be more than two character)"
+                echo -e "\e[91mError: Please enter a valid name (should be more than two character)\e[0m"
                 source main_menu.sh
             fi
         else
-            echo "Error: Please enter a valid name (should start with a letter)"
+            echo -e "\e[91mError: Please enter a valid name (should start with a letter)\e[0m"
             source main_menu.sh
         fi
 
-        echo "---------------------------------------------"
+        echo -e "\e[94m--------------------------------------------------------\e[0m"
 
         ;;
     2)
-        echo "------------------- databases List ------------------------"
-        ls -F Database | grep / | tr '/' ' '
-        echo "------------------------------------------"
+        clear
+        echo -e "\e[94m---------------------- databases List -------------------------\e[0m"
+        if [ -z "$(ls -A Database)" ]; then
+            echo -e "\e[93mThere is no database at the moment. You can add one.\e[0m"
+        else
+            ls -F Database | grep / | tr '/' ' '
+        fi
+        echo -e "\e[94m---------------------------------------------------------------\e[0m"
+        source main_menu.sh
         ;;
     3)
         clear
-        echo "--------------- Connect to a database ---------------------"
-        ls -F Database | grep / | tr '/' ' '
-        echo "------------------------------------------"
+        echo -e "\e[94m----------------- Connect to a database -----------------------\e[0m"
+        if [ -z "$(ls -A Database)" ]; then
+            echo -e "\e[93mThere is no database to connect to. Please add one first.\e[0m"
+            source main_menu.sh
+
+        else
+            ls -F Database | grep / | tr '/' ' '
+        fi
+        echo -e "\e[94m---------------------------------------------------------------\e[0m"
         read -p "Enter database Name (or 'back' to return): " name
         if [[ $name == "back" ]]; then
             source main_menu.sh
         fi
         if [[ -d Database/$name ]]; then
-            echo "Connected to $name"
+            echo -e "\e[92mConnected to\e[0m \e[93m$name\e[0m \e[92mdatabase\e[0m"
             source table_menu.sh $name
         else
-            echo "Error: Database not found."
+            echo -e "\e[91mError: Database not found.\e[0m"
             source main_menu.sh
         fi
         ;;
     4)
-        echo "----------------------Remove database---------------------"
-        ls -F Database | grep / | tr '/' ' '
-        echo "------------------------------------------"
+        echo -e "\e[94m-------------------------Remove database----------------------\e[0m"
+        if [ -z "$(ls -A Database)" ]; then
+            echo -e "\e[93mThere is no database to remove. Add one first.\e[0m"
+            source main_menu.sh
+
+        else
+            ls -F Database | grep / | tr '/' ' '
+        fi
+        echo -e "\e[94m--------------------------------------------------------------\e[0m"
         read -p "Enter database Name: " name
         if [[ -d Database/$name ]]; then
             rm -r Database/$name
-            echo "database [$name] deleted successfully."
+            echo -e "\e[91mdatabase [$name] deleted successfully.\e[0m"
+            source main_menu.sh
         else
-            echo "Error: Database not found."
+            echo -e "\e[91mError: Database not found.\e[0m"
+            source main_menu.sh
         fi
-        echo "------------------------------------------"
+        echo -e "\e[94m--------------------------------------------------------------\e[0m"
         ;;
     5)
-        echo "Exiting..."
-        echo "Good Bye :)"
-        break
+        echo -e "\e[90mExiting...\e[0m"
+        echo -e "\e[93mGood Bye :)\e[0m"
+        exit 1
         ;;
     *)
-        echo "Invalid option. Please try again."
+        echo -e "\e[91mInvalid option. Please try again.\e[0m"
         ;;
     esac
 done

@@ -2,7 +2,7 @@
 
 cd Database/$1
 ls . | tr " " "\n"
-echo "---------------------------------------------------------------------"
+echo -e "\e[94m--------------------------------------------------------------------\e[0m"
 
 read -p "Enter the table name: " tablename
 if [ -e "$tablename" ]; then
@@ -13,8 +13,8 @@ if [ -e "$tablename" ]; then
     num_records="${metadata[1]}"
     echo "Columns number: $num_columns"
 
-    line_number=$(awk 'END{print NR}' "$tablename")
-    echo -n "$((line_number - 1)):" >>"$tablename"
+    line_number=$(awk -F':' 'END{print $1}' "$tablename")
+    echo -n "$((line_number + 1)):" >>"$tablename"
 
     for ((i = 2; i <= $num_columns; i++)); do
         data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$tablename")
@@ -26,13 +26,13 @@ if [ -e "$tablename" ]; then
                 if [[ "$data" =~ ^[0-9]+$ ]]; then
                     break
                 else
-                    echo "Invalid data. Expected an integer."
+                    echo -e "\e[91mInvalid data. Expected an integer.\e[0m"
                 fi
             elif [ "$data_type" == "string" ]; then
                 if [[ "$data" =~ ^[[:alpha:]]+$ ]]; then
                     break
                 else
-                    echo "Invalid data. Expected a string."
+                    echo -e "\e[91mInvalid data. Expected a string.\e[0m"
                 fi
             fi
         done
@@ -46,11 +46,11 @@ if [ -e "$tablename" ]; then
 
     echo "" >>"$tablename"
 
-    echo "Data added successfully!"
+    echo -e "\e[92mData added successfully!\e[0m"
     cd ../../
     source table_menu.sh
 else
-    echo "Table doesn't exist."
+    echo -e "\e[91mTable doesn't exist.\e[0m"
     cd ../../
     source table_menu.sh
 fi
