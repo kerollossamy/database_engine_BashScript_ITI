@@ -33,6 +33,7 @@ select var in "Create Table" "list Table" "Drop Table" "Insert into Table" "Sele
         source insert_table.sh
         ;;
     5)
+        clear
         echo "------------------ Choose table to select from ------------------"
         source select_table.sh
         ;;

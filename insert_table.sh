@@ -18,9 +18,10 @@ if [ -e "$tablename" ]; then
 
     for ((i = 2; i <= $num_columns; i++)); do
         data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$tablename")
+        column_name=$(awk -F':' -v col="$i" 'NR==1{print $col}' "$tablename")
 
         while true; do
-            read -p "Enter data for column $i ($data_type): " data
+            read -p "Enter data for [$column_name] column ($data_type): " data
             if [ "$data_type" == "int" ]; then
                 if [[ "$data" =~ ^[0-9]+$ ]]; then
                     break
