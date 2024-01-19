@@ -1,17 +1,16 @@
 #!/bin/bash
 
 cd Database/$1
-ls . | tr " " "\n"
 echo -e "\e[94m--------------------------------------------------------------------\e[0m"
 
 read -p "Enter the table name: " tablename
 if [ -e "$tablename" ]; then
-    PS3="$tablename >>"
+    PS3="$tablename >> "
     clear
     metadata=($(awk -F':' 'NR==1{print NF} NR==2{print $0}' "$tablename"))
     num_columns="${metadata[0]}"
     num_records="${metadata[1]}"
-    echo "Columns number: $num_columns"
+    echo -e "Columns number: \e[93m$num_columns\e[0m"
 
     line_number=$(awk -F':' 'END{print $1}' "$tablename")
     echo -n "$((line_number + 1)):" >>"$tablename"
@@ -32,7 +31,7 @@ if [ -e "$tablename" ]; then
                 if [[ "$data" =~ ^[[:alpha:]]+$ ]]; then
                     break
                 else
-                    echo -e "\e[91mInvalid data. Expected a string.\e[0m"
+                    echo -e "\e[91mInvalid data. Expected a string with no spaces.\e[0m"
                 fi
             fi
         done
@@ -46,7 +45,7 @@ if [ -e "$tablename" ]; then
 
     echo "" >>"$tablename"
 
-    echo -e "\e[92mData added successfully!\e[0m"
+    echo -e "\e[92mData added successfully! with ID: $((line_number + 1))\e[0m"
     cd ../../
     source table_menu.sh
 else

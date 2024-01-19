@@ -1,12 +1,11 @@
 #!/bin/bash
 
 cd Database/$1
-ls . | tr " " "\n"
 echo -e "\e[94m--------------------------------------------------------------------\e[0m"
 
 read -p "Enter the table name: " tablename
 if [ -e "$tablename" ]; then
-    PS3="$tablename >>"
+    PS3="$tablename >> "
     clear
     select option in "Delete By ID" "Delete All data" "Back to previous menu"; do
         case $REPLY in
@@ -26,7 +25,7 @@ if [ -e "$tablename" ]; then
             ;;
         2)
             awk 'NR <= 2 {print; next} {nextfile}' "$tablename" >temp && mv temp "$tablename"
-            echo -e "\e[92mAll data in $tablename deleted successfully.\e[0m"
+            echo -e "\e[92mAll data in\e[0m \e[93m$tablename\e[0m \e[92m table deleted successfully.\e[0m"
             cd ../../
             source table_menu.sh
             ;;

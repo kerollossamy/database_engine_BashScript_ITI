@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cd Database/$1
-ls . | tr " " "\n"
 echo -e "\e[94m----------------------------------------------------------------\e[0m"
 
 read -p "Enter the table name: " tablename

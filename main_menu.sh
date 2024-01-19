@@ -1,6 +1,9 @@
 #!/bin/bash
 
-echo -e "\e[95mWelcome to Kerollos Samy Database engine simulator\e[0m"
+echo -e "\e[95;1m╔════════════════════════════════════════════════╗"
+echo -e "║     \e[38;5;208;1mKerollos Samy Database Engine Simulator\e[95;1m    ║"
+echo -e "╚════════════════════════════════════════════════╝\e[0m"
+
 PS3="Select an option: "
 
 if [[ ! -d "Database" ]]; then
@@ -15,7 +18,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         read -p "Enter database Name: " name
 
         if [[ ! "$name" =~ ^[0-9_] ]]; then
-            name=$(echo "$name" | sed 's/[^a-zA-Z0-9 ]//g' | tr " " "_")
+            name=$(echo "$name" | sed 's/[^a-zA-Z0-9_ \t]//g' | tr " " "_" | tr "\t" "_")
             database_path="Database/$name"
 
             if [[ ${#name} -gt 2 ]]; then
@@ -25,7 +28,21 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
                 else
                     mkdir "$database_path"
                     echo -e "\e[92m[$name] database created successfully.\e[0m"
-                    source main_menu.sh
+                    while true; do
+                        read -p "Do you want to connect to [$name] database? (y/n): " answer
+                        case "$answer" in
+                        [Yy] | [Yy][Ee][Ss])
+                            echo -e "\e[92mConnected to\e[0m \e[93m$name\e[0m \e[92mdatabase\e[0m"
+                            source table_menu.sh $name
+                            ;;
+                        [Nn] | [Nn][Oo])
+                            source main_menu.sh
+                            ;;
+                        *)
+                            echo "Invalid input. Please enter 'y' or 'n'."
+                            ;;
+                        esac
+                    done
                 fi
             else
                 echo -e "\e[91mError: Please enter a valid name (should be more than two character)\e[0m"
@@ -35,16 +52,14 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
             echo -e "\e[91mError: Please enter a valid name (should start with a letter)\e[0m"
             source main_menu.sh
         fi
-
         echo -e "\e[94m--------------------------------------------------------\e[0m"
-
         ;;
     2)
         clear
-        echo -e "\e[94m---------------------- databases List -------------------------\e[0m"
         if [ -z "$(ls -A Database)" ]; then
-            echo -e "\e[93mThere is no database at the moment. You can add one.\e[0m"
+            echo -e "\e[93mThere is no database at the moment. You can create one.\e[0m"
         else
+            echo -e "\e[94m---------------------- databases List -------------------------\e[0m"
             ls -F Database | grep / | tr '/' ' '
         fi
         echo -e "\e[94m---------------------------------------------------------------\e[0m"
@@ -52,20 +67,22 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         ;;
     3)
         clear
-        echo -e "\e[94m----------------- Connect to a database -----------------------\e[0m"
         if [ -z "$(ls -A Database)" ]; then
             echo -e "\e[93mThere is no database to connect to. Please add one first.\e[0m"
+            echo -e "\e[94m---------------------------------------------------------------\e[0m"
             source main_menu.sh
 
         else
+            echo -e "\e[94m----------------- Connect to a database -----------------------\e[0m"
             ls -F Database | grep / | tr '/' ' '
         fi
         echo -e "\e[94m---------------------------------------------------------------\e[0m"
-        read -p "Enter database Name (or 'back' to return): " name
-        if [[ $name == "back" ]]; then
+        read -p "Enter database Name (or '0' to return): " name
+        if [[ $name == "0" ]]; then
             source main_menu.sh
         fi
         if [[ -d Database/$name ]]; then
+            clear
             echo -e "\e[92mConnected to\e[0m \e[93m$name\e[0m \e[92mdatabase\e[0m"
             source table_menu.sh $name
         else
@@ -74,20 +91,35 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         fi
         ;;
     4)
-        echo -e "\e[94m-------------------------Remove database----------------------\e[0m"
+        clear
         if [ -z "$(ls -A Database)" ]; then
             echo -e "\e[93mThere is no database to remove. Add one first.\e[0m"
+            echo -e "\e[94m--------------------------------------------------------------\e[0m"
             source main_menu.sh
-
         else
+            echo -e "\e[94m-------------------------Remove database----------------------\e[0m"
             ls -F Database | grep / | tr '/' ' '
         fi
         echo -e "\e[94m--------------------------------------------------------------\e[0m"
         read -p "Enter database Name: " name
         if [[ -d Database/$name ]]; then
-            rm -r Database/$name
-            echo -e "\e[91mdatabase [$name] deleted successfully.\e[0m"
-            source main_menu.sh
+            while true; do
+                read -p "Are you sure you want to remove [$name] database? (y/n): " answer
+                case "$answer" in
+                [Yy] | [Yy][Ee][Ss])
+                    rm -r Database/$name
+                    echo -e "\e[92mdatabase [$name] deleted successfully.\e[0m"
+                    source main_menu.sh
+                    ;;
+                [Nn] | [Nn][Oo])
+                    echo -e "\e[93mRemoving database [$name] cancelled.\e[0m"
+                    source main_menu.sh
+                    ;;
+                *)
+                    echo "Invalid input. Please enter 'y' or 'n'."
+                    ;;
+                esac
+            done
         else
             echo -e "\e[91mError: Database not found.\e[0m"
             source main_menu.sh
