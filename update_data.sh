@@ -26,7 +26,7 @@ if [ -e "$tablename" ]; then
             else
                 read -p "Enter the value to update: " value_toUpdate
                 read -p "Enter the new value: " new_value
-                awk -F':' -v OFS=':' -v col_num="$field_number" -v value_toUpdate="$value_toUpdate" -v new_value="$new_value" '{if (NR > 1 && $col_num == value_toUpdate) {$col_num = new_value;}print;}' "$tablename" >tmpfile && mv tmpfile "$tablename"
+                awk -F':' -v OFS=':' -v col_num="$field_number" -v value_toUpdate="$value_toUpdate" -v new_value="$new_value" '{if (NR > 2 && $col_num == value_toUpdate) {$col_num = new_value;}print;}' "$tablename" >tmp && mv tmp "$tablename"
                 echo -e "\e[92mUpdated '$value_toUpdate' to '$new_value' successfully in '$col_name' column.\e[0m"
             fi
             cd ../../

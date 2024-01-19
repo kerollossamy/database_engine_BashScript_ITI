@@ -7,17 +7,15 @@ read -p "Enter the table name: " tablename
 if [ -e "$tablename" ]; then
     PS3="$tablename >> "
     clear
-    metadata=($(awk -F':' 'NR==1{print NF} NR==2{print $0}' "$tablename"))
-    num_columns="${metadata[0]}"
-    num_records="${metadata[1]}"
+    num_columns=$(awk -F':' 'NR==1{print NF}' "$tablename")
     echo -e "Columns number: \e[93m$num_columns\e[0m"
 
     line_number=$(awk -F':' 'END{print $1}' "$tablename")
     echo -n "$((line_number + 1)):" >>"$tablename"
 
     for ((i = 2; i <= $num_columns; i++)); do
-        data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$tablename")
         column_name=$(awk -F':' -v col="$i" 'NR==1{print $col}' "$tablename")
+        data_type=$(awk -F':' -v col="$i" 'NR==2{print $col}' "$tablename")
 
         while true; do
             read -p "Enter data for [$column_name] column ($data_type): " data
