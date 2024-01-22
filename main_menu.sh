@@ -17,7 +17,7 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         echo -e "\e[94m---------------------- Create database --------------------------\e[0m"
         read -p "Enter database Name: " name
 
-        if [[ ! "$name" =~ ^[0-9_] ]]; then
+        if [[ ! "$name" =~ ^[0-9_\.] ]]; then
             name=$(echo "$name" | sed 's/[^a-zA-Z0-9_ \t]//g' | tr " " "_" | tr "\t" "_")
             database_path="Database/$name"
 
@@ -81,13 +81,13 @@ select option in "Create database" "List databases" "Connect to a database" "Rem
         if [[ $name == "0" ]]; then
             source main_menu.sh
         fi
-        if [[ -d Database/$name ]]; then
+        if [[ "$name" =~ ^[.] ]]; then
+            echo -e "\e[91mError: Database not found.\e[0m"
+            source main_menu.sh
+        elif [[ -d Database/$name ]]; then
             clear
             echo -e "\e[92mConnected to\e[0m \e[93m$name\e[0m \e[92mdatabase\e[0m"
             source table_menu.sh $name
-        else
-            echo -e "\e[91mError: Database not found.\e[0m"
-            source main_menu.sh
         fi
         ;;
     4)
