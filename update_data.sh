@@ -11,24 +11,29 @@ if [ -e "$tablename" ]; then
         case $REPLY in
         1)
             clear
-
-            column_names=($(awk -F',' 'NR==1 {for (i=1; i<=NF; i++) print $i}' "$tablename"))
+            column_names=$(awk 'NR==1 {for (i=1; i<=NF; i++) print $i}' "$tablename")
             echo -e "\e[94m---------------------- Table Columns --------------------------\e[0m"
-            for ((i = 0; i < ${#column_names[@]}; i++)); do
-                echo "$column_names" | tr ":" " "
-            done
+            echo "$column_names" | tr ":" " "
             echo -e "\e[94m-------------------------------------------------------------\e[0m"
             read -p "Enter the name of the column to search in: " col_name
 
             field_number=$(awk -F':' -v col_name="$col_name" 'NR==1 {for (i=1; i<=NF; i++) if ($i == col_name) {print i; exit}}' "$tablename")
 
             if [ -z "$field_number" ]; then
-                echo -e "\e[91mError: The column '$col_name' not found.\e[0m"
+                echo -e "\e[91mError: There is no column called \e[93m$col_name\e[0m\e[91m.\e[0m"
             else
+                if [ "$col_name" == "ID" ]; then
+                    echo -e "\e[91mError: You can't update the ID column because it's the PK.\e[0m"
+                    cd ../../
+                    source table_menu.sh
+                fi
                 read -p "Enter the value to update: " value_toUpdate
-                if
-                    awk -F':' -v col_number="$field_number" -v value_toUpdate="$value_toUpdate" '$col_number == value_toUpdate {exit true} END{exit false}' "$tablename"
-                then
+                if ! tail -n +3 "$tablename" | awk -F':' -v col_number="$field_number" -v value_toUpdate="$value_toUpdate" '$col_number == value_toUpdate {found=1; exit} END{if(found!=1) {exit 1}}'; then
+                    echo -e "\e[91mError: \e[93m$value_toUpdate\e[0m \e[91mvalue doesn't exist in\e[0m \e[93m$col_name\e[0m \e[91mcolumn.\e[0m"
+                    echo ""
+                    cd ../../
+                    source table_menu.sh
+                else
                     while true; do
                         data_type=$(awk -F':' -v col_number="$field_number" 'NR==2 {print $col_number}' "$tablename")
                         read -p "Enter the new value: " new_value
@@ -48,8 +53,6 @@ if [ -e "$tablename" ]; then
                     done
                     awk -F':' -v OFS=':' -v col_num="$field_number" -v value="$value_toUpdate" -v new_value="$new_value" '{if (NR > 2 && $col_num == value) {$col_num = new_value;}print;}' "$tablename" >tmp && mv tmp "$tablename"
                     echo -e "\e[92mUpdated '$value_toUpdate' to '$new_value' successfully in '$col_name' column.\e[0m"
-                else
-                    echo "Value '$value_toUpdate' does not exist in column '$col_name'."
                 fi
             fi
             cd ../../
